@@ -5,8 +5,9 @@ import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer
 import android.util.Log
 import com.robot.pickle.databinding.FragmentMainBinding
+import io.socket.client.Socket
 
-class SpeechRecognition(private val binding: FragmentMainBinding): RecognitionListener {
+class SpeechRecognition(private val binding: FragmentMainBinding, private val socket: Socket): RecognitionListener {
 
     companion object {
         private const val TAG = "SpeechRecognition"
@@ -53,6 +54,8 @@ class SpeechRecognition(private val binding: FragmentMainBinding): RecognitionLi
         Log.d(TAG, "onResults: $results")
         binding.resultTextView.alpha = 1f
         binding.resultTextView.text = results?.first()
+
+        socket.emit("heard", results?.first())
     }
 
     override fun onEvent(evenType: Int, p1: Bundle?) {

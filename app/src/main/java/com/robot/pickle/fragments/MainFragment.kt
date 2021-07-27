@@ -84,13 +84,15 @@ class MainFragment: Fragment(R.layout.fragment_main) {
 
         // Create speech recognizer
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(activity).apply {
-            setRecognitionListener(SpeechRecognition(binding))
+            setRecognitionListener(SpeechRecognition(binding, socket))
         }
 
         // Set listen button click listener
         binding.listenButton.setOnClickListener {
             speechRecognizer.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+//                putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US.toString())
             })
             binding.resultTextView.text = "..."
@@ -167,6 +169,10 @@ class MainFragment: Fragment(R.layout.fragment_main) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
         }, ContextCompat.getMainExecutor(activity))
+    }
+
+    fun say(text: String) {
+        textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, null)
     }
 
     private fun runOnUiThread(action: () -> Unit) {
